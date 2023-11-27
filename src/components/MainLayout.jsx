@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./Header";
+import Header from "./Header.tsx";
 import Footer from "./Footer";
 
 const MainLayout = ({ children }) => {
