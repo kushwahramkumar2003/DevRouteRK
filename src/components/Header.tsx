@@ -12,6 +12,11 @@ const navItemsInfo = [
 ];
 
 const NavItem = ({ item }) => {
+  const [drowpDown, setDrowpDown] = React.useState(false);
+
+  const dropdownHandler = () => {
+    setDrowpDown((prev) => !prev);
+  };
   return (
     <li className="relative group">
       {item.type === "link" ? (
@@ -19,19 +24,26 @@ const NavItem = ({ item }) => {
           <a href="/" className="px-4 py-2 ">
             {item.name}
           </a>
-          <span className="text-blue-500 absolute transition-all duration-500 font-bold right-0 top-0  group-hover:right-[90%] opacity-0 group-hover:opacity-100">
+          <span className="text-blue-500 absolute transition-all duration-500 font-bold right-0 top-0  group-hover:right-[90%] opacity-0 group-hover:opacity-100 cursor-pointer">
             /
           </span>
         </>
       ) : (
-        <>
-          <a href="/" className="flex items-center px-4 py-2 gap-x-1">
+        <div className="flex flex-col items-center">
+          <button
+            className="flex items-center px-4 py-2 gap-x-1"
+            onClick={dropdownHandler}
+          >
             <span> {item.name}</span>
 
             <MdKeyboardArrowDown className="w-4 h-4" />
-          </a>
-          <div className="absolute bottom-0 right-0 hidden pt-4 transition-all duration-500 transform translate-y-full group-hover:block w-max">
-            <ul className="flex flex-col overflow-hidden rounded-lg shadow-lg">
+          </button>
+          <div
+            className={`${
+              drowpDown ? "block" : "hidden"
+            } pt-4 transition-all duration-500 lg:translate-y-full lg:transform lg:right-0 lg:bottom-0 lg:group-hover:block w-max lg:hidden lg:absolute`}
+          >
+            <ul className="flex flex-col overflow-hidden text-center rounded-lg shadow-lg bg-Dark-soft lg:bg-transparent">
               {item.items.map((page) => {
                 return (
                   // <li className="px-4 py-2 text-Dark-soft hover:text-blue-500">
@@ -46,20 +58,20 @@ const NavItem = ({ item }) => {
               })}
             </ul>
           </div>
-        </>
+        </div>
       )}
     </li>
   );
 };
 
 const Header = () => {
-  const [navIsVisible, setNavIsVisible] = React.useState(true);
+  const [navIsVisible, setNavIsVisible] = React.useState(false);
 
   const navVisibilityHandler = () => {
     setNavIsVisible((prev) => !prev);
   };
   return (
-    <section>
+    <section className="sticky top-0 left-0 right-0 z-50">
       <header className="container flex items-center justify-between px-5 py-4 mx-auto">
         <div>
           <img src={images.Logo} alt="" className="w-20" />
