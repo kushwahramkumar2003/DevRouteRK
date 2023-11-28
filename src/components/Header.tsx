@@ -71,7 +71,7 @@ const Header = () => {
     setNavIsVisible((prev) => !prev);
   };
   return (
-    <section className="sticky top-0 left-0 right-0 z-50">
+    <section className="sticky top-0 left-0 right-0 z-50 bg-white">
       <header className="container flex items-center justify-between px-5 py-4 mx-auto">
         <div>
           <img src={images.Logo} alt="" className="w-20" />

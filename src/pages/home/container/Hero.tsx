@@ -6,14 +6,14 @@ const Hero = () => {
   return (
     <section className="container flex flex-col px-5 py-5 mx-auto lg:flex-row">
       <div className="mt-10 lg:w-1/2">
-        <h1 className="text-3xl font-bold text-center font-roboto text-Dark-soft md:text-5xl lg:text-left lg:max-w-[540px]">
+        <h1 className="text-3xl font-bold text-center font-roboto text-Dark-soft md:text-5xl lg:text-left lg:max-w-[540px] lg:text-4xl xl:text-5xl">
           Read the most interesting articles.
         </h1>
-        <p className="mt-4 text-center text-Dark-light md:text-xl lg:text-left">
+        <p className="mt-4 text-center text-Dark-light md:text-xl lg:text-left lg:text-base xl:text-xl">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt
           culpa quod pariatur hic iure repellat eos iste rem veniam voluptate.
         </p>
-        <div className="flex flex-col gap-y-2.5 mt-10 relative ">
+        <div className="flex flex-col gap-y-2.5 mt-10 relative lg:mt6 xl:mt-10">
           <div className="relative ">
             <FiSearch className="absolute w-6 h-6 -translate-y-1/2 left-3 top-1/2 text-[#959eAD]" />
             <input
@@ -27,10 +27,10 @@ const Hero = () => {
           </button>
         </div>
         <div className="flex flex-col mt-4 lg:flex-row lg:flex-nowrap lg:gap-x-4 lg:mt-7 lg:items-start ">
-          <span className="mt-2 italic font-semibold lg:mt-4 text-Dark-light ">
+          <span className="mt-2 italic font-semibold lg:mt-4 text-Dark-light lg:text-sm xl:text-base">
             Popular Tags:
           </span>
-          <ul className="flex flex-wrap gap-x-2.5 gap-y-2.5 mt-3">
+          <ul className="flex flex-wrap gap-x-2.5 gap-y-2.5 mt-3 lg:text-sm xl:text-base">
             <li className="px-3 rounded-lg bg-primary bg-opacity-10 py-1.5 text-primary font-semibold italic">
               Design
             </li>
