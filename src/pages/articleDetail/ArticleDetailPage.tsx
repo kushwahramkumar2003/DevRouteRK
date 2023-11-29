@@ -4,6 +4,8 @@ import BreadCrumbs from "../../components/BreadCrumbs.tsx";
 import images from "../../constants/images.js";
 import { Link } from "react-router-dom";
 import SuggestedPosts from "./container/SuggestedPosts.tsx";
+import CommentsContainer from "./../../components/comments/CommentsContainer.tsx";
+import SocialShareButtons from "../../components/comments/SocialShareButtons.tsx";
 
 const breadCrumbsData = [
   {
@@ -90,14 +92,26 @@ const ArticleDetailPage = () => {
               aliquid omnis, fugit cupiditate.
             </p>
           </div>
+          <CommentsContainer className="mt-10" logginedUserId="a" />
         </article>
-        <SuggestedPosts
-          header={"Latest Article"}
-          posts={postsData}
-          // className="mt-8 lg:mt-0 lg:max-w-xs"
-          tags={tagsData}
-          classname={"mt-8 lg:mt-0 lg:max-w-xs"}
-        />
+        <div>
+          <SuggestedPosts
+            header={"Latest Article"}
+            posts={postsData}
+            // className="mt-8 lg:mt-0 lg:max-w-xs"
+            tags={tagsData}
+            classname={"mt-8 lg:mt-0 lg:max-w-xs"}
+          />
+          <div className="mt-7">
+            <h2 className="mb-4 font-medium font-roboto text-Dark-hard md:text-xl">
+              Share on:
+            </h2>
+          </div>
+          <SocialShareButtons
+            url={encodeURI(`www.google.com`)}
+            title={encodeURIComponent("This is a title")}
+          />
+        </div>
       </section>
     </MainLayout>
   );

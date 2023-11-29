@@ -44,11 +44,12 @@ const NavItem = ({ item }) => {
             } pt-4 transition-all duration-500 lg:translate-y-full lg:transform lg:right-0 lg:bottom-0 lg:group-hover:block w-max lg:hidden lg:absolute`}
           >
             <ul className="flex flex-col overflow-hidden text-center rounded-lg shadow-lg bg-Dark-soft lg:bg-transparent">
-              {item.items.map((page) => {
+              {item.items.map((page, index) => {
                 return (
                   // <li className="px-4 py-2 text-Dark-soft hover:text-blue-500">
                   <a
                     href="/"
+                    key={index}
                     className="px-4 py-2 text-white hover:bg-Dark-hard hover:text-white lg:text-Dark-soft"
                   >
                     {page}
