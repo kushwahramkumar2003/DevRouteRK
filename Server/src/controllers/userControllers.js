@@ -1,6 +1,7 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import User from "../models/User.js";
 import CustomError from "../utils/CustomError.js";
+import { uploadPicture } from "../middlewares/uploadPictureMiddleware.js";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
   //   console.log("req.body : ", req.body);
@@ -100,25 +101,48 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
 
-    if (req.body.password) {
+    if (req.body.password && req.body.password.length > 6) {
+      throw new CustomError(
+        "Password should be greater than 6 characters",
+        400
+      );
+    } else if (req.body.password) {
       user.password = req.body.password;
     }
 
-    const updatedUser = await user.save();
+    const updatedUserProfile = await user.save();
 
-    const token = await updatedUser.generateJWT();
+    const token = await updatedUserProfile.generateJWT();
+
+    updatedUserProfile.password = undefined;
 
     res.status(200).json({
       success: true,
-      _id: updatedUser._id,
-      avatar: updatedUser.avatar,
-      name: updatedUser.name,
-      email: updatedUser.email,
-      verified: updatedUser.verified,
-      admin: updatedUser.admin,
+      _id: updatedUserProfile._id,
+      avatar: updatedUserProfile.avatar,
+      name: updatedUserProfile.name,
+      email: updatedUserProfile.email,
+      verified: updatedUserProfile.verified,
+      admin: updatedUserProfile.admin,
       token,
     });
   } else {
     throw new CustomError("User not found", 404);
   }
+});
+
+export const updateProfilePicture = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+  const upload = uploadPicture.single("profilePicture");
+
+  upload(req, res, async (err) => {
+    if (err) {
+      throw new CustomError(err.message, 400);
+    }
+    if (req.file) {
+      const updatedUser = await User.findByIdAndUpdate(req.user._id, {
+        avatar: req.file.filename,
+      });
+    }
+  });
 });
