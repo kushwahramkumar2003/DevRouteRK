@@ -14,5 +14,11 @@ const config = {
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
   FROM_NAME: process.env.FROM_NAME,
+
+  CD_CLOUD_NAME: process.env.CLOUD_NAME,
+  CD_API_KEY: process.env.API_KEY,
+  CD_API_SECRET: process.env.API_SECRET,
+
+  FOLDER_NAME: process.env.FOLDER_NAME || "images",
 };
 export default config;
