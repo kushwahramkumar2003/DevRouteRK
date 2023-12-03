@@ -2,9 +2,10 @@ import asyncHandler from "../utils/asyncHandler.js";
 import User from "../models/User.js";
 import CustomError from "../utils/CustomError.js";
 import { uploadPicture } from "../middlewares/uploadPictureMiddleware.js";
+import fileRemover from "../utils/fileRemover.js";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
-  //   console.log("req.body : ", req.body);
+  console.log("req.body : ", req.body);
   const { name, email, password } = req.body;
 
   // Check if user exists
@@ -137,11 +138,44 @@ export const updateProfilePicture = asyncHandler(async (req, res, next) => {
 
   upload(req, res, async (err) => {
     if (err) {
-      throw new CustomError(err.message, 400);
+      throw new CustomError(err, 400);
     }
     if (req.file) {
-      const updatedUser = await User.findByIdAndUpdate(req.user._id, {
-        avatar: req.file.filename,
+      let filename;
+      let updatedUser = await User.findById(req.user._id);
+      filename = updatedUser.avatar;
+      if (filename) {
+        fileRemover(filename);
+      }
+      updatedUser.avatar = req.file.filename;
+      await updatedUser.save();
+      res.json({
+        success: true,
+        _id: updatedUser._id,
+        avatar: updatedUser.avatar,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        verified: updatedUser.verified,
+        admin: updatedUser.admin,
+        token: await updatedUser.generateJWT(),
+      });
+    } else {
+      let filename;
+      let updatedUser = await User.findById(req.user._id);
+      filename = updatedUser.avatar;
+      updatedUser.avatar = "";
+
+      await updatedUser.save();
+      fileRemover(filename);
+      res.json({
+        success: true,
+        _id: updatedUser._id,
+        avatar: updatedUser.avatar,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        verified: updatedUser.verified,
+        admin: updatedUser.admin,
+        token: await updatedUser.generateJWT(),
       });
     }
   });
