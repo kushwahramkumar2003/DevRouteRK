@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import CustomError from "../utils/CustomError.js";
 import uploadImageToCloudinary from "../utils/imageUploder.js";
 import config from "../config/index.js";
+import Comment from "../models/Comment.js";
 
 export const createPost = asyncHandler(async (req, res) => {
   console.log("req : ", req);
@@ -79,4 +80,16 @@ export const updatePost = asyncHandler(async (req, res) => {
 
     res.json(updatedPost);
   }
+});
+
+export const deletePost = asyncHandler(async (req, res) => {
+  const post = await Post.findOneAndDelete({ slug: req.params.slug });
+  if (!post) {
+    res.status(404);
+    throw new CustomError("Post not found", 404);
+  }
+
+  await Comment.deleteMany({ post: post._id });
+
+  res.json({ message: "Post removed" });
 });
