@@ -16,12 +16,15 @@ const PostSchema = new Schema(
       unique: true,
     },
     body: {
-      type: String,
+      // type: String,
+      // required: true,
+
+      type: Schema.Types.Mixed,
       required: true,
     },
     photo: {
       type: String,
-      required: true,
+      required: false,
     },
     user: {
       type: Schema.Types.ObjectId,

@@ -25,3 +25,10 @@ export const authGuard = asyncHandler(async (req, res, next) => {
     throw new CustomError("Not authorized, no token", 401);
   }
 });
+
+export const adminGuard = asyncHandler((req, res, next) => {
+  console.log("req.user.admin : ", req.user.admin);
+  if (req.user && req.user.admin) {
+    next();
+  } else throw new CustomError("Not authorized as an admin", 401);
+});
