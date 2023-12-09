@@ -93,3 +93,54 @@ export const deletePost = asyncHandler(async (req, res) => {
 
   res.json({ message: "Post removed" });
 });
+
+export const getPosts = asyncHandler(async (req, res) => {
+  const posts = await Post.findOne({ slug: req.params.slug }).populate([
+    {
+      path: "user",
+      select: ["name", "avatar"],
+    },
+    {
+      path: "comments",
+      match: {
+        check: true,
+        parent: null,
+      },
+      populate: [
+        {
+          path: "user",
+          select: ["name", "avatar"],
+        },
+        {
+          path: "replies",
+          match: {
+            check: true,
+          },
+        },
+      ],
+    },
+  ]);
+
+  if (!posts) {
+    res.status(404);
+    throw new CustomError("Post not found", 404);
+  }
+
+  return res.json(posts);
+});
+
+export const getAllPosts = asyncHandler(async (req, res) => {
+  const posts = await Post.find({}).populate([
+    {
+      path: "user",
+      select: ["name", "avatar", "verified"],
+    },
+  ]);
+
+  if (!posts) {
+    res.status(404);
+    throw new CustomError("Post not found", 404);
+  }
+
+  return res.json(posts);
+});

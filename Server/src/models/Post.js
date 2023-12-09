@@ -1,3 +1,4 @@
+import { formToJSON } from "axios";
 import { Schema, model } from "mongoose";
 
 const PostSchema = new Schema(
@@ -39,7 +40,7 @@ const PostSchema = new Schema(
       required: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true } }
 );
 
 PostSchema.virtual("comments", {

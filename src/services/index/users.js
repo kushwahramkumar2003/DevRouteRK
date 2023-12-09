@@ -42,7 +42,6 @@ export const getUserProfile = async ({ token }) => {
     };
     const { data } = await axios.get("/api/v1/users/profile", config);
 
-    // console.log(data);
     return data;
   } catch (error) {
     console.log(error);
@@ -64,7 +63,7 @@ export const updateProfile = async ({ token, userData }) => {
       userData,
       config
     );
-    // console.log(data);
+
     return data;
   } catch (error) {
     console.log(error);

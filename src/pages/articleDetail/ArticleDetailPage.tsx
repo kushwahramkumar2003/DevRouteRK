@@ -1,26 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MainLayout from "../../components/MainLayout.jsx";
 import BreadCrumbs from "../../components/BreadCrumbs.tsx";
 import images from "../../constants/images.js";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import SuggestedPosts from "./container/SuggestedPosts.tsx";
 import CommentsContainer from "./../../components/comments/CommentsContainer.tsx";
 import SocialShareButtons from "../../components/comments/SocialShareButtons.tsx";
+import { useQuery } from "@tanstack/react-query";
+import { getSinglePost } from "../../services/index/posts.js";
+import toast from "react-hot-toast";
+import { generateHTML } from "@tiptap/react";
+import Document from "@tiptap/extension-document";
+import Paragraph from "@tiptap/extension-paragraph";
+import Text from "@tiptap/extension-text";
+import italic from "@tiptap/extension-italic";
+import bold from "@tiptap/extension-bold";
+import parse from "html-react-parser";
 
-const breadCrumbsData = [
-  {
-    name: "Home",
-    link: "/",
-  },
-  {
-    name: "Blog",
-    link: "/blog",
-  },
-  {
-    name: "Article title",
-    link: "/blog/1",
-  },
-];
+import stables from "../../constants/stables.js";
 
 const postsData = [
   {
@@ -62,6 +59,36 @@ const tagsData = [
 ];
 
 const ArticleDetailPage = () => {
+  const { slug } = useParams();
+  const [breadCrumbsData, setBreadCrumbsData] = useState([{}]);
+  // const [body, setbody] = useState(null);
+  const [body, setBody] = useState(null);
+
+  const query = useQuery({
+    queryKey: ["blog", slug],
+    queryFn: () => getSinglePost({ slug }),
+  });
+
+  const { data } = query;
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      setBreadCrumbsData([
+        { name: "Home", link: "/" },
+        { name: "Blog", link: "/blog" },
+        { name: "Article title", link: `/blog/${data.slug}` },
+      ]);
+      setBody(
+        parse(
+          generateHTML(data?.body, [Document, Paragraph, Text, italic, bold])
+        )
+      );
+    }
+    if (query.isError) {
+      toast.error("Error while fetching data");
+    }
+  }, [query.isSuccess, query.isError, query.data]);
+
   return (
     <MainLayout>
       <section className="container flex flex-col max-w-5xl px-5 py-5 mx-auto lg:flex-row lg:items-start">
@@ -69,29 +96,24 @@ const ArticleDetailPage = () => {
           {" "}
           <BreadCrumbs data={breadCrumbsData} />{" "}
           <img
-            src={images.Post1Image}
-            alt="Post1Image"
+            src={data?.photo ? data.photo : images.Sample}
+            alt={data?.title}
             className="w-full rounded-xl"
           />
-          <Link
-            to="/blog?category=selectedCategory"
-            className="inline-block mt-4 text-sm text-primary font-roboto md:text-base"
-          >
-            EDUCATION
-          </Link>
-          <h1 className="mt-4 text-xl font-medium font-roboto text-Dark-hard md:text-[26px] ">
-            Help children get better education.
-          </h1>
-          <div className="mt-4 text-Dark-soft">
-            <p className="leading-7">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique
-              iste dolor cumque labore doloremque esse, nesciunt maiores quasi
-              architecto minima exercitationem illum ut voluptas vel laudantium
-              et assumenda facilis ex error soluta. Nihil vitae dolor doloremque
-              ut earum perspiciatis magni eum, id consequuntur et sunt quae
-              aliquid omnis, fugit cupiditate.
-            </p>
+          <div className="flex gap-2 mt-4">
+            {data?.categories.map((category) => (
+              <Link
+                to={`/blog?category=${category.name}`}
+                className="inline-block mt-4 text-sm text-primary font-roboto md:text-base"
+              >
+                {category.name}
+              </Link>
+            ))}
           </div>
+          <h1 className="mt-4 text-xl font-medium font-roboto text-Dark-hard md:text-[26px] ">
+            {data?.title}
+          </h1>
+          <div className="mt-4 prose-sm prose sm:prose-base">{body}</div>
           <CommentsContainer className="mt-10" logginedUserId="a" />
         </article>
         <div>
