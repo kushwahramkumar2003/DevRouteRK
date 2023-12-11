@@ -116,6 +116,12 @@ export const getPosts = asyncHandler(async (req, res) => {
           match: {
             check: true,
           },
+          populate: [
+            {
+              path: "user",
+              select: ["name", "avatar"],
+            },
+          ],
         },
       ],
     },
