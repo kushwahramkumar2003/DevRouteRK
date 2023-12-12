@@ -24,3 +24,20 @@ export const createComment = asyncHandler(async (req, res) => {
 
   res.status(201).json(savedComment);
 });
+
+export const updateComment = asyncHandler(async (req, res) => {
+  const commentId = req.params.commentId;
+  const { desc } = req.body;
+
+  const comment = await Comment.findById(commentId);
+
+  if (!comment) {
+    throw new CustomError("Comment was not found", 404);
+  }
+
+  comment.desc = desc || comment.desc;
+
+  const savedComment = await comment.save();
+
+  res.status(201).json(savedComment);
+});

@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import CommentForm from "./CommentForm.tsx";
 import { getCommentsData } from "../../data/comments.js";
 import Comment from "./Comment.tsx";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createComment } from "../../../Server/src/controllers/commentControllers";
-import { createNewComment } from "../../services/index/comments.js";
+import {
+  createNewComment,
+  updateComment,
+} from "../../services/index/comments.js";
 import { useSelector } from "react-redux";
 import { Slice } from "@tiptap/pm/model";
 import toast from "react-hot-toast";
@@ -15,15 +18,15 @@ const CommentsContainer = ({
   comments,
   postSlug,
 }) => {
+  const queryClient = useQueryClient();
   const [affectedComment, setAffectedComment] = useState(null);
 
   const userState = useSelector((state) => state.user);
 
   const {
     mutate: mutateNewComment,
-    isSuccess,
+
     isLoading: isLoadingNewComment,
-    isError,
   } = useMutation({
     mutationFn: ({ token, desc, slug, parent, replyOnUser }) => {
       return createNewComment({ token, desc, slug, parent, replyOnUser });
@@ -41,6 +44,27 @@ const CommentsContainer = ({
     },
   });
 
+  const {
+    mutate: mutateUpdatedComment,
+
+    
+  } = useMutation({
+    mutationFn: ({ token, desc, commentId }) => {
+      return updateComment({ token, desc, commentId });
+    },
+    onSuccess: (data) => {
+      console.log("data : ", data);
+      toast.success("Your comment is updated Successfully");
+      queryClient.invalidateQueries(["blog", postSlug]);
+    },
+
+    onError: (error) => {
+      console.log("error : ", error);
+
+      toast.error(error?.message ? error.message : "Comment Updating failed");
+    },
+  });
+
   const deleteCommentHandler = (commentId) => {};
   console.log("comments : ", comments);
 
@@ -55,7 +79,12 @@ const CommentsContainer = ({
     setAffectedComment(null);
   };
 
-  const updateCommentHandler = (value, parent = null, replyOnUser = null) => {
+  const updateCommentHandler = (value, commentId) => {
+    mutateUpdatedComment({
+      token: userState?.userInfo?.token,
+      desc: value,
+      commentId,
+    });
     setAffectedComment(null);
   };
 
