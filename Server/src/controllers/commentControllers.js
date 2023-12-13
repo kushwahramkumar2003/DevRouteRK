@@ -41,3 +41,19 @@ export const updateComment = asyncHandler(async (req, res) => {
 
   res.status(201).json(savedComment);
 });
+
+export const deleteComment = asyncHandler(async (req, res) => {
+  const commentId = req.params.commentId;
+  const comment = await Comment.findOneAndDelete({ _id: commentId });
+
+  await Comment.deleteMany({ parent: comment._id });
+
+  if (!comment) {
+    throw new CustomError("Comment was not found", 404);
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Comment was deleted successfully",
+  });
+});
