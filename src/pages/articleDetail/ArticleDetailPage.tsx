@@ -7,7 +7,7 @@ import SuggestedPosts from "./container/SuggestedPosts.tsx";
 import CommentsContainer from "./../../components/comments/CommentsContainer.tsx";
 import SocialShareButtons from "../../components/comments/SocialShareButtons.tsx";
 import { useQuery } from "@tanstack/react-query";
-import { getSinglePost } from "../../services/index/posts.js";
+import { getAllPosts, getSinglePost } from "../../services/index/posts.js";
 import toast from "react-hot-toast";
 import { generateHTML } from "@tiptap/react";
 import Document from "@tiptap/extension-document";
@@ -21,33 +21,6 @@ import stables from "../../constants/stables.js";
 import { useSelector } from "react-redux";
 import ArticleDetailSkeleton from "./components/ArticleDetailSkeleton.tsx";
 import ErrorMessage from "../../components/ErrorMessage.tsx";
-
-const postsData = [
-  {
-    _id: 1,
-    image: images.Post1Image,
-    title: "Help children get better education.",
-    createdAt: "2021-09-01T00:00:00.000Z",
-  },
-  {
-    _id: 2,
-    image: images.Post1Image,
-    title: "Help children get better education.",
-    createdAt: "2021-09-01T00:00:00.000Z",
-  },
-  {
-    _id: 3,
-    image: images.Post1Image,
-    title: "Help children get better education.",
-    createdAt: "2021-09-01T00:00:00.000Z",
-  },
-  {
-    _id: 4,
-    image: images.Post1Image,
-    title: "Help children get better education.",
-    createdAt: "2021-09-01T00:00:00.000Z",
-  },
-];
 
 const tagsData = [
   "Education",
@@ -67,6 +40,13 @@ const ArticleDetailPage = () => {
   const [breadCrumbsData, setBreadCrumbsData] = useState([{}]);
   const [body, setBody] = useState<string | Element | Element[] | null>(null);
   // const [body, setBody] = useState(null);
+
+  const query2 = useQuery({
+    queryKey: ["posts"],
+    queryFn: () => getAllPosts(),
+  });
+
+  let { data: postsData } = query2;
 
   const query = useQuery({
     queryKey: ["blog", slug],
@@ -91,7 +71,15 @@ const ArticleDetailPage = () => {
     if (query.isError) {
       toast.error("Error while fetching data");
     }
-  }, [query.isSuccess, query.isError, query.data, isLoading, isError, error]);
+  }, [
+    query.isSuccess,
+    query.isError,
+    query.data,
+    isLoading,
+    isError,
+    error,
+    postsData,
+  ]);
 
   return (
     <MainLayout>
@@ -137,7 +125,7 @@ const ArticleDetailPage = () => {
               header={"Latest Article"}
               posts={postsData}
               // className="mt-8 lg:mt-0 lg:max-w-xs"
-              tags={tagsData}
+              tags={data?.tags ? data.tags : []}
               classname={"mt-8 lg:mt-0 lg:max-w-xs"}
             />
             <div className="mt-7">
@@ -146,8 +134,8 @@ const ArticleDetailPage = () => {
               </h2>
             </div>
             <SocialShareButtons
-              url={encodeURI(`www.google.com`)}
-              title={encodeURIComponent("This is a title")}
+              url={encodeURI(window.location.href)}
+              title={encodeURIComponent(data?.title)}
             />
           </div>
         </section>

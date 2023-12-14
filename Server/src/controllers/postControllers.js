@@ -142,6 +142,7 @@ export const getAllPosts = asyncHandler(async (req, res) => {
       select: ["name", "avatar", "verified"],
     },
   ]);
+  console.log(posts.tags);
 
   if (!posts) {
     res.status(404);

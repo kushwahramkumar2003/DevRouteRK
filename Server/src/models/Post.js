@@ -32,11 +32,11 @@ const PostSchema = new Schema(
       ref: "User",
     },
     tags: {
-      type: [{ type: Schema.Types.ObjectId, ref: "PostCategories" }],
+      type: [String],
       required: false,
     },
     categories: {
-      type: [String],
+      type: [{ type: Schema.Types.ObjectId, ref: "PostCategories" }],
       required: false,
     },
   },
