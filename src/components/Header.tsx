@@ -137,6 +137,16 @@ const Header = () => {
                   >
                     <ul className="flex flex-col overflow-hidden text-center rounded-lg shadow-lg bg-Dark-soft lg:bg-transparent">
                       {/* <li className="flex flex-col px-4 py-2 rounded-lg text-Dark-soft hover:text-blue-500"> */}
+                      {userState?.userInfo?.admin && (
+                        <button
+                          type="button"
+                          className="px-4 py-2 text-white hover:bg-Dark-hard hover:text-white lg:text-Dark-soft"
+                          onClick={() => navigate("/admin")}
+                        >
+                          Admin Dashboard
+                        </button>
+                      )}
+
                       <button
                         type="button"
                         className="px-4 py-2 text-white hover:bg-Dark-hard hover:text-white lg:text-Dark-soft"
