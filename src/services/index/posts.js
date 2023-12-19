@@ -5,6 +5,7 @@ export const getAllPosts = async (searchKeyword = "", page = 1, limit = 10) => {
     const { data, headers } = await axios.get(
       `/api/v1/posts?searchKeyword=${searchKeyword}&page=${page}&limit=${limit}}`
     );
+    console.log("Headers : ", headers);
     return { data, headers };
   } catch (error) {
     if (error.response) {
