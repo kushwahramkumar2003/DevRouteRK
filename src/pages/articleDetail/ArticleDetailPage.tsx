@@ -123,7 +123,7 @@ const ArticleDetailPage = () => {
           <div>
             <SuggestedPosts
               header={"Latest Article"}
-              posts={postsData}
+              posts={postsData?.data}
               // className="mt-8 lg:mt-0 lg:max-w-xs"
               tags={data?.tags ? data.tags : []}
               classname={"mt-8 lg:mt-0 lg:max-w-xs"}

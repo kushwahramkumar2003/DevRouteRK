@@ -136,18 +136,51 @@ export const getPosts = asyncHandler(async (req, res) => {
 });
 
 export const getAllPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find({}).populate([
-    {
-      path: "user",
-      select: ["name", "avatar", "verified"],
-    },
-  ]);
-  console.log(posts.tags);
+  const filter = req.query.searchKeyword;
 
-  if (!posts) {
-    res.status(404);
-    throw new CustomError("Post not found", 404);
+  let where = {};
+
+  if (filter) {
+    where.title = {
+      $regex: filter,
+      $options: "i",
+    };
   }
 
-  return res.json(posts);
+  let query = Post.find(where);
+
+  const page = parseInt(req.query.page) || 1;
+
+  const pageSize = parseInt(req.query.limit) || 10;
+
+  const skip = (page - 1) * pageSize;
+
+  const total = await Post.countDocuments();
+  const pages = Math.ceil(total / pageSize);
+
+  if (page > pages) {
+    res.status(404);
+    throw new CustomError("Page not found", 404);
+  }
+
+  const result = await query
+    .skip(skip)
+    .limit(pageSize)
+    .populate([
+      {
+        path: "user",
+        select: ["name", "avatar", "verified"],
+      },
+    ])
+    .sort({ updatedAt: "desc" });
+
+  res.header({
+    "x-filter": filter,
+    "x-totalCount": JSON.stringify(total),
+    "x-currentPage": JSON.stringify(page),
+    "x-pageSize": JSON.stringify(pageSize),
+    "x-totalPagesCount": JSON.stringify(pages),
+  });
+
+  return res.status(200).json(result);
 });

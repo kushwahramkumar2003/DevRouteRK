@@ -15,7 +15,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
-  const userState = useSelector((state) => state.user);
+  const userState = useSelector((state):Object => state.user);
 
   const {
     data: profileData,

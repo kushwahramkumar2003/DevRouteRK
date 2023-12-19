@@ -8,7 +8,12 @@ import ArticleCardSkeleton from "../../../components/ArticleCardSkeleton.tsx";
 import ErrorMessage from "../../../components/ErrorMessage.tsx";
 
 const Article = () => {
-  const { data, isLoading, isError, error } = useQuery({
+  const {
+    data: postsData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryFn: () => getAllPosts(),
     queryKey: ["posts"],
   });
@@ -18,7 +23,7 @@ const Article = () => {
       toast.error(error.name, { duration: 4000 });
     }
     console.log("use effect");
-  }, [isError, isLoading, data]);
+  }, [isError, isLoading, postsData]);
 
   return (
     <section className="container flex flex-col px-5 py-10 mx-auto">
@@ -35,7 +40,7 @@ const Article = () => {
         ) : isError ? (
           <ErrorMessage message={"Couldn't fetch the posts data"} />
         ) : (
-          data.map((post) => {
+          postsData.data.map((post) => {
             return (
               <ArticleCard
                 key={post._id}
