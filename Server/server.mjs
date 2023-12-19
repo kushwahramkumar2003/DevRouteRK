@@ -1,6 +1,7 @@
 import app from "./src/App.js";
 import config from "./src/config/index.js";
 import connect from "./src/services/connectDB.js";
+import cloudnairyconnect from "./src/services/cloudinary.js";
 import asyncHandler from "./src/utils/asyncHandler.js";
 
 //create a method
@@ -11,7 +12,8 @@ import asyncHandler from "./src/utils/asyncHandler.js";
   try {
     await connect(); //connect to DB
 
-    app.on("error", (err) => {
+    await cloudnairyconnect(); //connect to cloudinary
+    await app.on("error", (err) => {
       // error handling
       console.error("Error : ", err);
       throw err;

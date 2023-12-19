@@ -2,81 +2,119 @@ import React, { useEffect, useState } from "react";
 import CommentForm from "./CommentForm.tsx";
 import { getCommentsData } from "../../data/comments.js";
 import Comment from "./Comment.tsx";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createComment } from "../../../Server/src/controllers/commentControllers";
+import {
+  createNewComment,
+  deleteComment,
+  updateComment,
+} from "../../services/index/comments.js";
+import { useSelector } from "react-redux";
+import { Slice } from "@tiptap/pm/model";
+import toast from "react-hot-toast";
 
-const CommentsContainer = ({ className, logginedUserId }) => {
-  const [comments, setComments] = useState([]);
-  const mainComments = comments.filter((comment) => {
-    return comment.parent === null;
+const CommentsContainer = ({
+  className,
+  logginedUserId,
+  comments,
+  postSlug,
+}) => {
+  const queryClient = useQueryClient();
+  const [affectedComment, setAffectedComment] = useState(null);
+
+  const userState = useSelector((state) => state.user);
+
+  const {
+    mutate: mutateNewComment,
+
+    isLoading: isLoadingNewComment,
+  } = useMutation({
+    mutationFn: ({ token, desc, slug, parent, replyOnUser }) => {
+      return createNewComment({ token, desc, slug, parent, replyOnUser });
+    },
+    onSuccess: (data) => {
+      console.log("data : ", data);
+      toast.success(
+        "Your comment is send successfully, it will be visible after the confirmation of the Admin"
+      );
+    },
+    onError: (error) => {
+      console.log("error : ", error);
+
+      toast.error(error?.message ? error.message : "Comment adding failed");
+    },
   });
 
-  const updateCommentHandler = (value, commentId) => {
-    const updatedComments = comments.map((comment) => {
-      if (comment._id === commentId) {
-        return {
-          ...comment,
-          desc: value,
-        };
-      }
-      return comment;
-    });
-    setComments(updatedComments);
-    setAffectedComment(null);
-  };
+  const { mutate: mutateUpdatedComment } = useMutation({
+    mutationFn: ({ token, desc, commentId }) => {
+      return updateComment({ token, desc, commentId });
+    },
+    onSuccess: (data) => {
+      console.log("data : ", data);
+      toast.success("Your comment is updated Successfully");
+      queryClient.invalidateQueries(["blog", postSlug]);
+    },
 
-  const [affectedComment, setAffectedComment] = useState(null);
-  console.log(comments);
+    onError: (error) => {
+      console.log("error : ", error);
 
-  useEffect(() => {
-    (async () => {
-      const commentsData = await getCommentsData();
-      //   setComments((commentsData) => {
-      //     return commentsData;
-      //   });
-      setComments(commentsData);
-    })();
-  }, []);
+      toast.error(error?.message ? error.message : "Comment Updating failed");
+    },
+  });
 
-  const addCommentHandler = (value, parent = null, replyOnUser = null) => {
-    const newComment = {
-      _id: Math.random().toString(),
-      user: {
-        _id: "a",
-        name: "Mohammad Rezaii",
-      },
-      desc: value,
-      post: "1",
-      parent: parent,
-      replyOnUser: replyOnUser,
-      createdAt: new Date().toISOString(),
-    };
-    setComments((prev) => {
-      return [newComment, ...prev];
-    });
-    setAffectedComment(null);
-  };
+  const { mutate: mutateDeleteComment } = useMutation({
+    mutationFn: ({ token, commentId }) => {
+      return deleteComment({ token, commentId });
+    },
+    onSuccess: (data) => {
+      console.log("data : ", data);
+      toast.success("Your deleted is updated Successfully");
+      queryClient.invalidateQueries(["blog", postSlug]);
+    },
+
+    onError: (error) => {
+      console.log("error : ", error);
+
+      toast.error(error?.message ? error.message : "Comment deleting failed");
+    },
+  });
 
   const deleteCommentHandler = (commentId) => {
-    const updatedComments = comments.filter(
-      (comment) => comment._id !== commentId
-    );
-    setComments(updatedComments);
+    mutateDeleteComment({
+      token: userState?.userInfo?.token,
+      commentId,
+    });
   };
 
-  const getRepliesHandler = (commentId) => {
-    const replies = comments.filter((comment) => comment.parent === commentId);
-    replies.sort((a, b) => {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  const addCommentHandler = (value, parent = null, replyOnUser = null) => {
+    mutateNewComment({
+      desc: value,
+      parent,
+      replyOnUser,
+      token: userState?.userInfo?.token,
+      slug: postSlug,
     });
-    return replies;
+    setAffectedComment(null);
   };
+
+  const updateCommentHandler = (value, commentId) => {
+    mutateUpdatedComment({
+      token: userState?.userInfo?.token,
+      desc: value,
+      commentId,
+    });
+    setAffectedComment(null);
+  };
+
   return (
     <div className={`${className}`}>
       <CommentForm
         btnLabel="Send"
         formSubmitHandler={(value) => addCommentHandler(value)}
+        loading={isLoadingNewComment}
       />
       <div className="mt-8 space-y-4">
-        {mainComments.map((comment, index) => {
+        {comments.map((comment, index) => {
           return (
             <Comment
               key={comment._id}
@@ -84,10 +122,10 @@ const CommentsContainer = ({ className, logginedUserId }) => {
               logginedUserId={logginedUserId}
               affectedComment={affectedComment}
               setAffectedComment={setAffectedComment}
+              deleteComment={deleteCommentHandler}
+              replies={comment.replies}
               addComment={addCommentHandler}
               updateComment={updateCommentHandler}
-              deleteComment={deleteCommentHandler}
-              replies={getRepliesHandler(comment._id)}
             />
           );
         })}

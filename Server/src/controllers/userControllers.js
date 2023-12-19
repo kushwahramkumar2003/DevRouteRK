@@ -3,6 +3,9 @@ import User from "../models/User.js";
 import CustomError from "../utils/CustomError.js";
 import { uploadPicture } from "../middlewares/uploadPictureMiddleware.js";
 import fileRemover from "../utils/fileRemover.js";
+import { errorResponserHandler } from "../middlewares/errorHandler.js";
+import uploadImageToCloudinary from "../utils/imageUploder.js";
+import config from "../config/index.js";
 
 export const registerUser = asyncHandler(async (req, res, next) => {
   console.log("req.body : ", req.body);
@@ -133,50 +136,58 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 });
 
 export const updateProfilePicture = asyncHandler(async (req, res, next) => {
+  console.log("here");
+  console.log("req.user : ", req.user);
   const user = await User.findById(req.user._id);
-  const upload = uploadPicture.single("profilePicture");
 
-  upload(req, res, async (err) => {
-    if (err) {
-      throw new CustomError(err, 400);
-    }
-    if (req.file) {
-      let filename;
-      let updatedUser = await User.findById(req.user._id);
-      filename = updatedUser.avatar;
-      if (filename) {
-        fileRemover(filename);
-      }
-      updatedUser.avatar = req.file.filename;
-      await updatedUser.save();
-      res.json({
-        success: true,
-        _id: updatedUser._id,
-        avatar: updatedUser.avatar,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        verified: updatedUser.verified,
-        admin: updatedUser.admin,
-        token: await updatedUser.generateJWT(),
-      });
-    } else {
-      let filename;
-      let updatedUser = await User.findById(req.user._id);
-      filename = updatedUser.avatar;
-      updatedUser.avatar = "";
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+  if (req.files && req.files.profilePicture) {
+    const img = req.files.profilePicture;
 
-      await updatedUser.save();
-      fileRemover(filename);
-      res.json({
-        success: true,
-        _id: updatedUser._id,
-        avatar: updatedUser.avatar,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        verified: updatedUser.verified,
-        admin: updatedUser.admin,
-        token: await updatedUser.generateJWT(),
+    if (!img) {
+      return res.status(404).json({
+        success: false,
+        message: "Image not found",
       });
     }
-  });
+
+    let uploadDetails = await uploadImageToCloudinary(img, config.FOLDER_NAME);
+    console.log("upload details : " + uploadDetails);
+
+    user.avatar = uploadDetails.secure_url;
+
+    const updatedUser = await user.save();
+
+    res.json({
+      success: true,
+      _id: updatedUser._id,
+      avatar: updatedUser.avatar,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      verified: updatedUser.verified,
+      admin: updatedUser.admin,
+      token: await updatedUser.generateJWT(),
+    });
+  } else {
+    user.avatar = "";
+    const updatedUser = await user.save();
+
+    console.log("updatedUser : ", updatedUser);
+
+    res.json({
+      success: true,
+      _id: updatedUser._id,
+      avatar: updatedUser.avatar,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      verified: updatedUser.verified,
+      admin: updatedUser.admin,
+      token: await updatedUser.generateJWT(),
+    });
+  }
 });

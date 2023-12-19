@@ -32,7 +32,7 @@ const Comment = ({
     <div className="flex items-start flex-nowrap gap-x-3 bg-[#F2F4F5] p-3 rounded-lg">
       {/* <img src={comment?.image} alt="user profile" /> */}
       <img
-        src={images.PostProfileImage}
+        src={comment?.user?.avatar ? comment.user.avatar : images.User}
         alt="user profile"
         className="object-cover rounded-full w-9 h-9"
       />
