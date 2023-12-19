@@ -155,7 +155,7 @@ export const getAllPosts = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * pageSize;
 
-  const total = await Post.countDocuments();
+  const total = await Post.find(where).countDocuments();
   const pages = Math.ceil(total / pageSize);
 
   if (page > pages) {
