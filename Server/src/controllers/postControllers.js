@@ -158,9 +158,18 @@ export const getAllPosts = asyncHandler(async (req, res) => {
   const total = await Post.find(where).countDocuments();
   const pages = Math.ceil(total / pageSize);
 
+  res.header({
+    "x-filter": filter,
+    "x-totalCount": JSON.stringify(total),
+    "x-currentPage": JSON.stringify(page),
+    "x-pageSize": JSON.stringify(pageSize),
+    "x-totalPagesCount": JSON.stringify(pages),
+  });
+
   if (page > pages) {
-    res.status(404);
-    throw new CustomError("Page not found", 404);
+    return res.json([]);
+    // res.status(404);
+    // throw new CustomError("Page not found", 404);
   }
 
   const result = await query
@@ -173,14 +182,6 @@ export const getAllPosts = asyncHandler(async (req, res) => {
       },
     ])
     .sort({ updatedAt: "desc" });
-
-  res.header({
-    "x-filter": filter,
-    "x-totalCount": JSON.stringify(total),
-    "x-currentPage": JSON.stringify(page),
-    "x-pageSize": JSON.stringify(pageSize),
-    "x-totalPagesCount": JSON.stringify(pages),
-  });
 
   return res.status(200).json(result);
 });

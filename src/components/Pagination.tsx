@@ -19,6 +19,8 @@ const Pagination = ({
     siblingCount,
   });
 
+  console.log("TotalPageCount : ", totalPageCount);
+
   if (currentPage === 0 || paginationRange.length < 2) return null;
 
   const onNext = (): void => {
