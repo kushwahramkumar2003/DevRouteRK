@@ -10,17 +10,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllPosts, getSinglePost } from "../../services/index/posts.js";
 import toast from "react-hot-toast";
 import { generateHTML } from "@tiptap/react";
-import Document from "@tiptap/extension-document";
-import Paragraph from "@tiptap/extension-paragraph";
-import Text from "@tiptap/extension-text";
-import italic from "@tiptap/extension-italic";
-import bold from "@tiptap/extension-bold";
 import parse from "html-react-parser";
-
-import stables from "../../constants/stables.js";
 import { useSelector } from "react-redux";
 import ArticleDetailSkeleton from "./components/ArticleDetailSkeleton.tsx";
 import ErrorMessage from "../../components/ErrorMessage.tsx";
+import Editor from "../../components/editor/Editor.tsx";
+import { extensions } from "../../constants/tiptapExtensions.js";
 
 const tagsData = [
   "Education",
@@ -62,10 +57,13 @@ const ArticleDetailPage = () => {
         { name: "Blog", link: "/blog" },
         { name: "Article title", link: `/blog/${data.slug}` },
       ]);
+      console.log("data?.body", data?.body);
       setBody(
-        parse(
-          generateHTML(data?.body, [Document, Paragraph, Text, italic, bold])
-        ) as string | Element | Element[] | null
+        parse(generateHTML(data?.body, extensions)) as
+          | string
+          | Element
+          | Element[]
+          | null
       );
     }
     if (query.isError) {
@@ -110,7 +108,9 @@ const ArticleDetailPage = () => {
             <h1 className="mt-4 text-xl font-medium font-roboto text-Dark-hard md:text-[26px] ">
               {data?.title}
             </h1>
-            <div className="mt-4 prose-sm prose sm:prose-base">{body}</div>
+            <div className="w-full">
+              {!isLoading && <Editor content={data?.body} editable={false} />}
+            </div>
             {data && (
               <CommentsContainer
                 comments={data?.comments}
@@ -120,7 +120,8 @@ const ArticleDetailPage = () => {
               />
             )}
           </article>
-          <div>
+
+          <div className="">
             <SuggestedPosts
               header={"Latest Article"}
               posts={postsData?.data}
