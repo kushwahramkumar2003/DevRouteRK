@@ -101,6 +101,10 @@ export const getPosts = asyncHandler(async (req, res) => {
       select: ["name", "avatar"],
     },
     {
+      path: "categories",
+      select: ["title"],
+    },
+    {
       path: "comments",
       match: {
         check: true,
@@ -147,7 +151,10 @@ export const getAllPosts = asyncHandler(async (req, res) => {
     };
   }
 
-  let query = Post.find(where);
+  let query = Post.find(where).populate({
+    path: "categories",
+    select: ["title"],
+  });
 
   const page = parseInt(req.query.page) || 1;
 
@@ -155,12 +162,26 @@ export const getAllPosts = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * pageSize;
 
-  const total = await Post.find(where).countDocuments();
+  const total = await Post.find(where)
+    .populate({
+      path: "categories",
+      select: ["title"],
+    })
+    .countDocuments();
   const pages = Math.ceil(total / pageSize);
 
+  res.header({
+    "x-filter": filter,
+    "x-totalCount": JSON.stringify(total),
+    "x-currentPage": JSON.stringify(page),
+    "x-pageSize": JSON.stringify(pageSize),
+    "x-totalPagesCount": JSON.stringify(pages),
+  });
+
   if (page > pages) {
-    res.status(404);
-    throw new CustomError("Page not found", 404);
+    return res.json([]);
+    // res.status(404);
+    // throw new CustomError("Page not found", 404);
   }
 
   const result = await query
@@ -173,14 +194,6 @@ export const getAllPosts = asyncHandler(async (req, res) => {
       },
     ])
     .sort({ updatedAt: "desc" });
-
-  res.header({
-    "x-filter": filter,
-    "x-totalCount": JSON.stringify(total),
-    "x-currentPage": JSON.stringify(page),
-    "x-pageSize": JSON.stringify(pageSize),
-    "x-totalPagesCount": JSON.stringify(pages),
-  });
 
   return res.status(200).json(result);
 });

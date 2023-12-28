@@ -1,53 +1,81 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { getAllPosts, getSinglePost } from "../../../../services/index/posts";
+import { Link } from "react-router-dom";
+
+import {
+  deletePost,
+  getAllPosts,
+  getSinglePost,
+} from "../../../../services/index/posts";
 import toast from "react-hot-toast";
 import { images } from "../../../../constants";
 import Pagination from "../../../../components/Pagination.tsx";
+import { useSelector } from "react-redux";
 
 let isFirstRender = true;
 
 const ManagePosts = () => {
-  const [searchKeyword, setSearchKeyword] = useState<string>("");
-
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const queryClient = useQueryClient();
+  const userState = useSelector((state) => state.user);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
     data: postsData,
-    isError,
     isLoading,
     isFetching,
     refetch,
   } = useQuery({
-    queryKey: ["posts"],
     queryFn: () => getAllPosts(searchKeyword, currentPage),
+    queryKey: ["posts"],
   });
 
+  const { mutate: mutateDeletePost, isLoading: isLoadingDeletePost } =
+    useMutation({
+      mutationFn: ({ slug, token }) => {
+        return deletePost({
+          slug,
+          token,
+        });
+      },
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(["posts"]);
+        toast.success("Post is deleted");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+        console.log(error);
+      },
+    });
+
   useEffect(() => {
-    console.log("postdata : ", postsData);
     if (isFirstRender) {
       isFirstRender = false;
       return;
     }
     refetch();
-  }, [currentPage, refetch]);
+  }, [refetch, currentPage]);
 
-  useEffect((): void => {
-    if (isError) {
-      toast.error("Error while fetching data");
-    }
-    console.log("postdata : ", postsData);
-  }, [isError]);
+  const searchKeywordHandler = (e) => {
+    const { value } = e.target;
+    setSearchKeyword(value);
+  };
 
-  const submitSearchKeywordHandler = (e): void => {
+  const submitSearchKeywordHandler = (e) => {
     e.preventDefault();
     setCurrentPage(1);
     refetch();
   };
+
+  const deletePostHandler = ({ slug, token }) => {
+    mutateDeletePost({ slug, token });
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-semibold">Mange Posts</h1>
-      <div className="w-full px-4 mx-auto ">
+
+      <div className="w-full px-4 mx-auto">
         <div className="py-8">
           <div className="flex flex-row justify-between w-full mb-1 sm:mb-0">
             <h2 className="text-2xl leading-tight">Users</h2>
@@ -61,8 +89,9 @@ const ManagePosts = () => {
                     type="text"
                     id='"form-subscribe-Filter'
                     className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="Post title.."
-                    onChange={(e) => setSearchKeyword(e.target.value)}
+                    placeholder="Post title..."
+                    onChange={searchKeywordHandler}
+                    value={searchKeyword}
                   />
                 </div>
                 <button
@@ -113,7 +142,13 @@ const ManagePosts = () => {
                   {isLoading || isFetching ? (
                     <tr>
                       <td colSpan={5} className="w-full py-10 text-center">
-                        Loading....
+                        Loading...
+                      </td>
+                    </tr>
+                  ) : postsData?.data?.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="w-full py-10 text-center">
+                        No posts found
                       </td>
                     </tr>
                   ) : (
@@ -124,9 +159,9 @@ const ManagePosts = () => {
                             <div className="flex-shrink-0">
                               <a href="/" className="relative block">
                                 <img
-                                  alt="profile"
-                                  src={post?.image ? post.photo : images.Sample}
-                                  className="object-cover w-10 h-10 mx-auto rounded-lg aspect-square"
+                                  src={post?.photo ? post.photo : images.Sample}
+                                  alt={post.title}
+                                  className="object-cover w-10 mx-auto rounded-lg aspect-square"
                                 />
                               </a>
                             </div>
@@ -140,14 +175,14 @@ const ManagePosts = () => {
                         <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
                           <p className="text-gray-900 whitespace-no-wrap">
                             {post.categories.length > 0
-                              ? post.categories[0]
-                              : "No category"}
+                              ? post.categories[0].title
+                              : "Uncategorized"}
                           </p>
                         </td>
                         <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
                           <p className="text-gray-900 whitespace-no-wrap">
                             {new Date(post.createdAt).toLocaleDateString(
-                              "en-IN",
+                              "en-US",
                               {
                                 day: "numeric",
                                 month: "short",
@@ -157,36 +192,49 @@ const ManagePosts = () => {
                           </p>
                         </td>
                         <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                          <div className="flex gap-x-2 ">
+                          <div className="flex gap-x-2">
                             {post.tags.length > 0
                               ? post.tags.map((tag, index) => (
                                   <p>
                                     {tag}
-                                    {post.tags.length - 1 !== index && ", "}
+                                    {post.tags.length - 1 !== index && ","}
                                   </p>
                                 ))
                               : "No tags"}
                           </div>
                         </td>
-                        <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
-                          <a
-                            href="/"
-                            className="text-indigo-600 hover:text-indigo-900"
+                        <td className="px-5 py-5 space-x-5 text-sm bg-white border-b border-gray-200">
+                          <button
+                            disabled={isLoadingDeletePost}
+                            type="button"
+                            className="text-red-600 hover:text-red-900 disabled:opacity-70 disabled:cursor-not-allowed"
+                            onClick={() => {
+                              deletePostHandler({
+                                slug: post?.slug,
+                                token: userState.userInfo.token,
+                              });
+                            }}
+                          >
+                            Delete
+                          </button>
+                          <Link
+                            to={`/admin/posts/manage/edit/${post?.slug}`}
+                            className="text-green-600 hover:text-green-900"
                           >
                             Edit
-                          </a>
+                          </Link>
                         </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
-              {!isLoading &&  (
+              {!isLoading && (
                 <Pagination
                   onPageChange={(page) => setCurrentPage(page)}
                   currentPage={currentPage}
                   totalPageCount={JSON.parse(
-                    postsData?.headers?.["x-totalcount"]
+                    postsData?.headers?.["x-totalpagescount"]
                   )}
                 />
               )}

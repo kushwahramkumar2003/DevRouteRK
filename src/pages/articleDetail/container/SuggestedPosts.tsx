@@ -18,7 +18,7 @@ const SuggestedPosts = ({ classname, header, posts, tags }) => {
               className="flex items-center space-x-3 flex-nowrap "
             >
               <img
-                src={item?.image ? item.image : images.Sample}
+                src={item?.photo ? item.photo : images.Sample}
                 alt={item?.title}
                 className="object-cover w-1/5 rounded-lg aspect-square"
               />

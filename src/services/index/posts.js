@@ -27,3 +27,64 @@ export const getSinglePost = async ({ slug }) => {
     throw new Error(error.message);
   }
 };
+
+export const deletePost = async ({ slug, token }) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const { data } = await axios.delete(`/api/v1/posts/${slug}`, config);
+    console.log("Data : ", data);
+    return data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(error.message);
+  }
+};
+
+export const updatePost = async ({ updatedData, slug, token }) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const { data } = await axios.put(
+      `/api/v1/posts/${slug}`,
+      updatedData,
+      config
+    );
+    console.log("Data : ", data);
+    return data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(error.message);
+  }
+};
+
+export const createPost = async ({ token }) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const { data } = await axios.post(`/api/v1/posts`, {}, config);
+    console.log("Data : ", data);
+    return data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(error.message);
+  }
+};
