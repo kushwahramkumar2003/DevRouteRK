@@ -26,6 +26,17 @@ import SocialShareButtons from "../../../../components/comments/SocialShareButto
 import parseJsonToHtml from "../../../../utils/parseJsonToHtml.ts";
 import { HiOutlineCamera } from "react-icons/hi";
 import Editor from "../../../../components/editor/Editor.tsx";
+import MultiSelectTagDropdown from "../../components/select-dropdown/MultiSelectTagDropdown.tsx";
+import { getAllCategories } from "../../../../services/index/postCategories.js";
+import {
+  categoryToOption,
+  filterCategories,
+} from "../../../../utils/multiSelectTagUtils.ts";
+
+const promiseOptions = async (inputValue) => {
+  const categoriesData = await getAllCategories();
+  return filterCategories(inputValue, categoriesData);
+};
 
 const EditPost = () => {
   const { slug } = useParams();
@@ -174,10 +185,10 @@ const EditPost = () => {
             <div className="flex gap-2 mt-4">
               {data?.categories.map((category) => (
                 <Link
-                  to={`/blog?category=${category.name}`}
+                  to={`/blog?category=${category.title}`}
                   className="inline-block text-sm text-primary font-roboto md:text-base"
                 >
-                  {category.name}
+                  {category.title}
                 </Link>
               ))}
             </div>
@@ -223,7 +234,7 @@ const EditPost = () => {
               <label className="d-label">
                 <span className="d-label-text">categories</span>
               </label>
-              {/* {isPostDataLoaded && (
+              {isPostDataLoaded && (
                 <MultiSelectTagDropdown
                   loadOptions={promiseOptions}
                   defaultValue={data.categories.map(categoryToOption)}
@@ -231,7 +242,7 @@ const EditPost = () => {
                     setCategories(newValue.map((item) => item.value))
                   }
                 />
-              )} */}
+              )}
             </div>
             <div className="mt-2 mb-5">
               <label className="d-label">

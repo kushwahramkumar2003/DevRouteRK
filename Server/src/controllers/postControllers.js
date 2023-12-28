@@ -101,6 +101,10 @@ export const getPosts = asyncHandler(async (req, res) => {
       select: ["name", "avatar"],
     },
     {
+      path: "categories",
+      select: ["title"],
+    },
+    {
       path: "comments",
       match: {
         check: true,
@@ -147,7 +151,10 @@ export const getAllPosts = asyncHandler(async (req, res) => {
     };
   }
 
-  let query = Post.find(where);
+  let query = Post.find(where).populate({
+    path: "categories",
+    select: ["title"],
+  });
 
   const page = parseInt(req.query.page) || 1;
 
@@ -155,7 +162,12 @@ export const getAllPosts = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * pageSize;
 
-  const total = await Post.find(where).countDocuments();
+  const total = await Post.find(where)
+    .populate({
+      path: "categories",
+      select: ["title"],
+    })
+    .countDocuments();
   const pages = Math.ceil(total / pageSize);
 
   res.header({
