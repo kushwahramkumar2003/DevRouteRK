@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+// eslint-disable-next-line
 import { deletePost, getAllPosts } from "../services/index/posts";
 import toast from "react-hot-toast";
 

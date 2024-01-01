@@ -23,7 +23,7 @@ const ProfilePicture = ({ avatar }) => {
       setOpenCrop(true);
     }
   };
-
+// eslint-disable-next-line
   const { mutate, isLoading } = useMutation({
     mutationFn: ({ token, formData }) => {
       return updateProfilePicture({

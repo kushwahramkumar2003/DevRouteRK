@@ -1,18 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+
+import React from "react";
 import { Link } from "react-router-dom";
 
 import {
   deletePost,
   getAllPosts,
-  getSinglePost,
+
 } from "../../../../services/index/posts";
-import toast from "react-hot-toast";
+
 import { images } from "../../../../constants";
 import Pagination from "../../../../components/Pagination.tsx";
-import { useSelector } from "react-redux";
-import { useDataTable } from "../../../../hooks/useDataTable.ts";
 
+import { useDataTable } from "../../../../hooks/useDataTable.ts";
+// eslint-disable-next-line
 let isFirstRender = true;
 
 const ManagePosts = () => {

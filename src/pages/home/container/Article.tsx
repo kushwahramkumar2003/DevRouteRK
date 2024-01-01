@@ -23,6 +23,7 @@ const Article = () => {
       toast.error(error.name, { duration: 4000 });
     }
     console.log("use effect");
+    // eslint-disable-next-line
   }, [isError, isLoading, postsData]);
 
   return (

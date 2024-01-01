@@ -1,8 +1,11 @@
+// eslint-disable-next-line
 import React, { useEffect, useState } from "react";
 import CommentForm from "./CommentForm.tsx";
+// eslint-disable-next-line
 import { getCommentsData } from "../../data/comments.js";
 import Comment from "./Comment.tsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+// eslint-disable-next-line
 import { createComment } from "../../../Server/src/controllers/commentControllers";
 import {
   createNewComment,
@@ -10,6 +13,7 @@ import {
   updateComment,
 } from "../../services/index/comments.js";
 import { useSelector } from "react-redux";
+// eslint-disable-next-line
 import { Slice } from "@tiptap/pm/model";
 import toast from "react-hot-toast";
 

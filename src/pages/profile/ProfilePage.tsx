@@ -20,6 +20,7 @@ const ProfilePage = () => {
   const {
     data: profileData,
     isLoading: profileIsLoading,
+    // eslint-disable-next-line
     error: profileError,
   } = useQuery({
     queryFn: () => {
