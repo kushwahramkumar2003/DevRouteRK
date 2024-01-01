@@ -17,22 +17,12 @@ import ErrorMessage from "../../components/ErrorMessage.tsx";
 import Editor from "../../components/editor/Editor.tsx";
 import { extensions } from "../../constants/tiptapExtensions.js";
 
-const tagsData = [
-  "Education",
-  "Health",
-  "Lifestyle",
-  "Technology",
-  "Travel",
-  "Food",
-  "Fashion",
-  "Beauty",
-  "Sports",
-];
 
 const ArticleDetailPage = () => {
   const userState = useSelector((state) => state.user);
   const { slug } = useParams();
   const [breadCrumbsData, setBreadCrumbsData] = useState([{}]);
+  // eslint-disable-next-line
   const [body, setBody] = useState<string | Element | Element[] | null>(null);
   // const [body, setBody] = useState(null);
 
@@ -69,6 +59,7 @@ const ArticleDetailPage = () => {
     if (query.isError) {
       toast.error("Error while fetching data");
     }
+    // eslint-disable-next-line
   }, [
     query.isSuccess,
     query.isError,

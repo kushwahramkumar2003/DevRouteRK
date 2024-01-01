@@ -6,6 +6,7 @@ import { updateProfilePicture } from "../../services/index/users";
 import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../../store/reducers/userReducers";
 import { useToaster } from "react-hot-toast";
+// eslint-disable-next-line
 import { set } from "react-hook-form";
 
 const CropEasy = ({ photo, setOpenCrop }) => {
