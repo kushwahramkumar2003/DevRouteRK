@@ -46,7 +46,9 @@ export const updatePost = asyncHandler(async (req, res) => {
 
     post.photo = uploadDetails.secure_url;
 
-    const { title, caption, body, tags, categories } = JSON.parse(
+    console.log("Update data : ", req.body.document);
+
+    const { title, caption, body, tags, categories ,slug} = JSON.parse(
       req.body.document
     );
 
@@ -57,14 +59,15 @@ export const updatePost = asyncHandler(async (req, res) => {
     post.body = body || post.body;
     post.tags = tags || post.tags;
     post.categories = categories || post.categories;
+    post.slug = slug || post.slug;
 
-    const updatedPost = await post.save();
+    const updatedPost = await post.save({ new: true });
 
     res.json(updatedPost);
   } else {
     console.log("no image");
     post.photo = "";
-    const { title, caption, body, tags, categories } = JSON.parse(
+    const { title, caption, body, tags, categories,slug } = JSON.parse(
       req.body.document
     );
 
@@ -73,6 +76,7 @@ export const updatePost = asyncHandler(async (req, res) => {
     post.body = body || post.body;
     post.tags = tags || post.tags;
     post.categories = categories || post.categories;
+    post.slug = slug || post.slug;
 
     const updatedPost = await post.save();
 

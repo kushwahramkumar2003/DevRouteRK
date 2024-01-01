@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
+import CreatableSelect from "react-select/creatable";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -69,6 +70,8 @@ const EditPost = () => {
       setCategories(data.categories.map((item) => item._id));
       setTitle(data.title);
       setTags(data.tags);
+      setPostSlug(data.slug);
+      setCaption(data.caption);
       //   setBody(parseJsonToHtml(data?.body));
     }
     if (isError) {
@@ -201,7 +204,7 @@ const EditPost = () => {
                 value={title}
                 className="d-input d-input-bordered border-slate-300 !outline-slate-300 text-xl font-medium font-roboto text-dark-hard"
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="title"
+                placeholder="Title"
               />
             </div>
             <div className="w-full d-form-control">
@@ -248,7 +251,7 @@ const EditPost = () => {
               <label className="d-label">
                 <span className="d-label-text">tags</span>
               </label>
-              {/* {isPostDataLoaded && (
+              {isPostDataLoaded && (
                 <CreatableSelect
                   defaultValue={data.tags.map((tag) => ({
                     value: tag,
@@ -260,7 +263,7 @@ const EditPost = () => {
                   }
                   className="relative z-20"
                 />
-              )} */}
+              )}
             </div>
             <div className="w-full">
               {isPostDataLoaded && (

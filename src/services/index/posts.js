@@ -30,6 +30,7 @@ export const getSinglePost = async ({ slug }) => {
 
 export const deletePost = async ({ slug, token }) => {
   try {
+    console.log("token : ", token);
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -11,65 +11,31 @@ import toast from "react-hot-toast";
 import { images } from "../../../../constants";
 import Pagination from "../../../../components/Pagination.tsx";
 import { useSelector } from "react-redux";
+import { useDataTable } from "../../../../hooks/useDataTable.ts";
 
 let isFirstRender = true;
 
 const ManagePosts = () => {
-  const queryClient = useQueryClient();
-  const userState = useSelector((state) => state.user);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-
   const {
-    data: postsData,
+    userState,
+    currentPage,
+    searchKeyword,
+    data: PostData,
     isLoading,
     isFetching,
-    refetch,
-  } = useQuery({
-    queryFn: () => getAllPosts(searchKeyword, currentPage),
-    queryKey: ["posts"],
+    isLoadingDeleteData,
+    searchKeywordHandler,
+    submitSearchKeywordHandler,
+    deleteDataHandler,
+    setCurrentPage,
+  } = useDataTable({
+    dataQueryFn: (): any => getAllPosts(searchKeyword, currentPage),
+    dataQueryKey: "posts",
+    deleteDataMessage: "Post deleted successfully",
+    mutateDeleteFn: ({ slug, token }) => {
+      return deletePost({slug, token});
+    },
   });
-
-  const { mutate: mutateDeletePost, isLoading: isLoadingDeletePost } =
-    useMutation({
-      mutationFn: ({ slug, token }) => {
-        return deletePost({
-          slug,
-          token,
-        });
-      },
-      onSuccess: (data) => {
-        queryClient.invalidateQueries(["posts"]);
-        toast.success("Post is deleted");
-      },
-      onError: (error) => {
-        toast.error(error.message);
-        console.log(error);
-      },
-    });
-
-  useEffect(() => {
-    if (isFirstRender) {
-      isFirstRender = false;
-      return;
-    }
-    refetch();
-  }, [refetch, currentPage]);
-
-  const searchKeywordHandler = (e) => {
-    const { value } = e.target;
-    setSearchKeyword(value);
-  };
-
-  const submitSearchKeywordHandler = (e) => {
-    e.preventDefault();
-    setCurrentPage(1);
-    refetch();
-  };
-
-  const deletePostHandler = ({ slug, token }) => {
-    mutateDeletePost({ slug, token });
-  };
 
   return (
     <div>
@@ -145,14 +111,14 @@ const ManagePosts = () => {
                         Loading...
                       </td>
                     </tr>
-                  ) : postsData?.data?.length === 0 ? (
+                  ) : PostData?.data?.length === 0 ? (
                     <tr>
                       <td colSpan={5} className="w-full py-10 text-center">
                         No posts found
                       </td>
                     </tr>
                   ) : (
-                    postsData?.data.map((post) => (
+                    PostData?.data.map((post) => (
                       <tr>
                         <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
                           <div className="flex items-center">
@@ -175,7 +141,17 @@ const ManagePosts = () => {
                         <td className="px-5 py-5 text-sm bg-white border-b border-gray-200">
                           <p className="text-gray-900 whitespace-no-wrap">
                             {post.categories.length > 0
-                              ? post.categories[0].title
+                              ? post.categories
+                                  .slice(0, 3)
+                                  .map(
+                                    (category, index) =>
+                                      `${category.title}${
+                                        post.categories.slice(0, 3).length ===
+                                        index + 1
+                                          ? ""
+                                          : ", "
+                                      }`
+                                  )
                               : "Uncategorized"}
                           </p>
                         </td>
@@ -205,11 +181,11 @@ const ManagePosts = () => {
                         </td>
                         <td className="px-5 py-5 space-x-5 text-sm bg-white border-b border-gray-200">
                           <button
-                            disabled={isLoadingDeletePost}
+                            disabled={isLoadingDeleteData}
                             type="button"
                             className="text-red-600 hover:text-red-900 disabled:opacity-70 disabled:cursor-not-allowed"
                             onClick={() => {
-                              deletePostHandler({
+                              deleteDataHandler({
                                 slug: post?.slug,
                                 token: userState.userInfo.token,
                               });
@@ -234,7 +210,7 @@ const ManagePosts = () => {
                   onPageChange={(page) => setCurrentPage(page)}
                   currentPage={currentPage}
                   totalPageCount={JSON.parse(
-                    postsData?.headers?.["x-totalpagescount"]
+                    PostData?.headers?.["x-totalpagescount"]
                   )}
                 />
               )}
