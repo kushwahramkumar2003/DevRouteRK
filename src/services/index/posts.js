@@ -1,4 +1,8 @@
 import axios from "axios";
+import baseURL from "../../constants/baseUrl";
+
+axios.defaults.baseURL = baseURL;
+axios.defaults.withCredentials = true;
 
 export const getAllPosts = async (searchKeyword = "", page = 1, limit = 10) => {
   try {
