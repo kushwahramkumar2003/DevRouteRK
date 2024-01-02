@@ -1,5 +1,9 @@
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import baseURL from "../../constants/baseUrl";
+
+axios.defaults.baseURL = baseURL;
+axios.defaults.withCredentials = true;
 
 export const getAllCategories = async () => {
   try {
