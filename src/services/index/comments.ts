@@ -38,7 +38,17 @@ export const createNewComment = async ({
   }
 };
 
-export const updateComment = async ({ token, desc, commentId }) => {
+export const updateComment = async ({
+  token,
+  desc,
+  check,
+  commentId,
+}: {
+  token: string;
+  commentId: string;
+  check: boolean;
+  desc: string;
+}) => {
   try {
     const config = {
       headers: {
@@ -50,6 +60,7 @@ export const updateComment = async ({ token, desc, commentId }) => {
       `/api/v1/comments/${commentId}`,
       {
         desc,
+        check,
       },
       config
     );
@@ -79,6 +90,32 @@ export const deleteComment = async ({ token, commentId }) => {
     return data;
   } catch (error) {
     if (error.response && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error(error.message);
+  }
+};
+
+export const getAllComments = async (
+  token,
+  searchKeyword = "",
+  page = 1,
+  limit = 10
+) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const { data, headers } = await axios.get(
+      `/api/v1/comments?searchKeyword=${searchKeyword}&page=${page}&limit=${limit}}`,
+      config
+    );
+    console.log("Headers : ", headers);
+    return { data, headers };
+  } catch (error) {
+    if (error.response) {
       throw new Error(error.response.data.message);
     }
     throw new Error(error.message);
