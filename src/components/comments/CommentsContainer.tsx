@@ -11,7 +11,7 @@ import {
   createNewComment,
   deleteComment,
   updateComment,
-} from "../../services/index/comments.js";
+} from "../../services/index/comments.ts";
 import { useSelector } from "react-redux";
 // eslint-disable-next-line
 import { Slice } from "@tiptap/pm/model";

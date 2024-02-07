@@ -29,7 +29,10 @@ const Comment = ({
   const repliedCommentId = parentId ? parentId : comment._id;
   const replayOnUserId = comment.user._id;
   return (
-    <div className="flex items-start flex-nowrap gap-x-3 bg-[#F2F4F5] p-3 rounded-lg">
+    <div
+      className="flex items-start flex-nowrap gap-x-3 bg-[#F2F4F5] p-3 rounded-lg"
+      id={`comment-${comment?._id}`}
+    >
       {/* <img src={comment?.image} alt="user profile" /> */}
       <img
         src={comment?.user?.avatar ? comment.user.avatar : images.User}

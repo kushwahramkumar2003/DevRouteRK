@@ -23,7 +23,7 @@ const ProfilePicture = ({ avatar }) => {
       setOpenCrop(true);
     }
   };
-// eslint-disable-next-line
+  // eslint-disable-next-line
   const { mutate, isLoading } = useMutation({
     mutationFn: ({ token, formData }) => {
       return updateProfilePicture({
@@ -35,7 +35,7 @@ const ProfilePicture = ({ avatar }) => {
       dispatch(userActions.setUserInfo(data));
       setOpenCrop(false);
       localStorage.setItem("account", JSON.stringify(data));
-      queryClient.invalidateQueries(["profile"]);
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
 
       toast.success("Profile Photo is Removed");
     },
