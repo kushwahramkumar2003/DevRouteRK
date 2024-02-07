@@ -8,11 +8,7 @@ import {
 } from "../../../../services/index/comments.ts";
 import DataTable from "../../components/DataTable.tsx";
 import images from "../../../../constants/images.js";
-import {
-  QueryClient,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 const Comments = () => {
@@ -175,7 +171,7 @@ const Comments = () => {
           </td> */}
           <td className="px-5 py-5 space-x-5 text-sm bg-white border-b border-gray-200">
             <button
-              disabled={isLoadingDeleteData}
+              disabled={isLoadingUpdateCommentCheck}
               type="button"
               className={` disabled:opacity-70 disabled:cursor-not-allowed ${
                 comment?.check
