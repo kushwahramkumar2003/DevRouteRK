@@ -6,7 +6,7 @@ import {
     deleteCategory,
     getAllCategories,
 } from "../../../../services/index/postCategories";
-import {useEffect, useState} from "react";
+import { useState} from "react";
 import {useDataTable} from "../../../../hooks/useDataTable.js";
 import DataTable from "../../components/DataTable.jsx";
 

@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { deletePost, getAllPosts } from "../../../../services/index/posts";
 
 import { images } from "../../../../constants";
-import Pagination from "../../../../components/Pagination.tsx";
 
 import { useDataTable } from "../../../../hooks/useDataTable.js";
 import DataTable from "../../components/DataTable.jsx";
