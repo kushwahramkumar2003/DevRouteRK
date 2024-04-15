@@ -13,6 +13,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { createPost } from "../../../../services/index/posts";
+import {FaUser} from "react-icons/fa6";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -120,7 +121,16 @@ const Header = () => {
                 >
                   Add New Post
                 </button>
+                  <Link to="/admin/categories/manage">Categories</Link>
               </NavItemCollapse>
+                <NavItem
+                    title="Users"
+                    link="/admin/users/manage"
+                    icon={<FaUser className="text-xl" />}
+                    name="users"
+                    activeNavName={activeNavName}
+                    setActiveNavName={setActiveNavName}
+                />
             </div>
           </div>
         </div>
