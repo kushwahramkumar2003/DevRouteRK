@@ -6,8 +6,8 @@ import { deletePost, getAllPosts } from "../../../../services/index/posts";
 import { images } from "../../../../constants";
 import Pagination from "../../../../components/Pagination.tsx";
 
-import { useDataTable } from "../../../../hooks/useDataTable.ts";
-import DataTable from "../../components/DataTable.tsx";
+import { useDataTable } from "../../../../hooks/useDataTable.js";
+import DataTable from "../../components/DataTable.jsx";
 // eslint-disable-next-line
 let isFirstRender = true;
 

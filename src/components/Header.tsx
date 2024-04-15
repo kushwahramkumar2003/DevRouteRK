@@ -95,7 +95,7 @@ const Header = () => {
         <Link to="/">
           <img src={images.Logo} alt="" className="w-20" />
         </Link>
-        <div className="z-50 lg:hidden ">
+        <div className="z-50 lg:hidden">
           {navIsVisible ? (
             <AiOutlineClose
               className="w-6 h-6"

@@ -120,6 +120,7 @@ const Header = () => {
                 >
                   Add New Post
                 </button>
+                  <Link to="/admin/categories/manage">Categories</Link>
               </NavItemCollapse>
             </div>
           </div>

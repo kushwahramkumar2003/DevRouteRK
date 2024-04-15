@@ -13,6 +13,7 @@ import Comments from "./pages/Admin/screens/comments/Comments.tsx";
 import NewPost from "./pages/Admin/screens/posts/NewPost.tsx";
 import ManagePosts from "./pages/Admin/screens/posts/ManagePosts.tsx";
 import EditPost from "./pages/Admin/screens/posts/EditPost.tsx";
+import Categories from "./pages/Admin/screens/categories/Categories.tsx";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="comments" element={<Comments />} />
           <Route path="posts/new" element={<NewPost />} />
           <Route path="posts/manage" element={<ManagePosts />} />
+          <Route path="categories/manage" element={<Categories />} />
           <Route path="posts/manage/edit/:slug" element={<EditPost />} />
         </Route>
       </Routes>

@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useDataTable } from "../../../../hooks/useDataTable.ts";
+import { useDataTable } from "../../../../hooks/useDataTable.js";
 import {
   deleteComment,
   getAllComments,
   updateComment,
 } from "../../../../services/index/comments.ts";
-import DataTable from "../../components/DataTable.tsx";
+import DataTable from "../../components/DataTable.jsx";
 import images from "../../../../constants/images.js";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
