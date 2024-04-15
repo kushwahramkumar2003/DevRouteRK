@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import {
     createCategory,
@@ -11,6 +11,7 @@ import {useDataTable} from "../../../../hooks/useDataTable.js";
 import DataTable from "../../components/DataTable.jsx";
 
 const Categories = () => {
+    const queryClient = useQueryClient();
     const [categoryTitle, seTcategoryTitle] = useState("");
 
     const { mutate: mutateCreateCategory, isLoading: isLoadingCreateCategory } =
@@ -22,7 +23,7 @@ const Categories = () => {
                 });
             },
             onSuccess: (data) => {
-                queryClient.invalidateQueries(["categories"]);
+                queryClient.invalidateQueries({queryKey:"categories"});
                 toast.success("Category is created");
             },
             onError: (error) => {
@@ -39,7 +40,6 @@ const Categories = () => {
         isLoading,
         isFetching,
         isLoadingDeleteData,
-        queryClient,
         searchKeywordHandler,
         submitSearchKeywordHandler,
         deleteDataHandler,
